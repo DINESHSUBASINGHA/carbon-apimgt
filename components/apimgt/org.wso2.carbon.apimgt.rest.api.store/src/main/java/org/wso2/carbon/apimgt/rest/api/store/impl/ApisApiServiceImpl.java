@@ -19,11 +19,7 @@ package org.wso2.carbon.apimgt.rest.api.store.impl;
 import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.api.APIProvider;
 import org.wso2.carbon.apimgt.api.FaultGatewaysException;
-import org.wso2.carbon.apimgt.api.model.API;
-import org.wso2.carbon.apimgt.api.model.APIIdentifier;
-import org.wso2.carbon.apimgt.api.model.Documentation;
-import org.wso2.carbon.apimgt.api.model.DuplicateAPIException;
-import org.wso2.carbon.apimgt.api.model.KeyManager;
+import org.wso2.carbon.apimgt.api.model.*;
 import org.wso2.carbon.apimgt.impl.factory.KeyManagerHolder;
 import org.wso2.carbon.apimgt.rest.api.store.ApiResponseMessage;
 import org.wso2.carbon.apimgt.rest.api.store.ApisApiService;
@@ -32,6 +28,7 @@ import org.wso2.carbon.apimgt.rest.api.store.dto.DocumentDTO;
 import org.wso2.carbon.apimgt.rest.api.store.exception.InternalServerErrorException;
 import org.wso2.carbon.apimgt.rest.api.store.exception.NotFoundException;
 import org.wso2.carbon.apimgt.rest.api.store.utils.mappings.APIMappingUtil;
+import org.wso2.carbon.apimgt.rest.api.util.impl.OpenIDClientImpl;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 
@@ -42,7 +39,9 @@ import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 public class ApisApiServiceImpl extends ApisApiService {
@@ -65,6 +64,32 @@ public class ApisApiServiceImpl extends ApisApiService {
                // PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(userName);
             }*/
 
+            //======================================================
+            OpenIDClientImpl  impo = new OpenIDClientImpl();
+            APIIdentifier id = new APIIdentifier("admin","RESTAPI-STORE", "v1");
+            API api1 = new API(id);
+            Set<Scope> scopes= new HashSet<Scope>();
+            Scope scope = new Scope();
+            scope.setName("test_scope");
+            scope.setKey("test_scope");
+            scope.setDescription("test_scope");
+            scope.setRoles("admin");
+            scopes.add(scope);
+            api1.setScopes(scopes);
+
+            OAuthAppRequest appRequest = new OAuthAppRequest();
+            OAuthApplicationInfo info = new OAuthApplicationInfo();
+            info.setCallBackURL("test_url");
+            info.setClientId("test_url");
+            info.setClientSecret("test_url");
+            info.setClientName("test_url");
+            appRequest.setOAuthApplicationInfo(info);
+            appRequest.setMappingId("someID");
+            impo.createOauthApp(appRequest);
+            impo.registerResource(api1);
+
+
+            //=====================================================
             apis = apiProvider.searchAPIs(query,type, loggedInUser);
             for (API temp : apis) {
                 list.add(APIMappingUtil.fromAPItoDTO(temp));
