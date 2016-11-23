@@ -54,7 +54,7 @@ public class LoggingHandler implements MessagingHandler {
 
     @Override
     public void invokeAtSourceRequestReceiving(CarbonMessage carbonMessage) {
-        //We need to check auth header here. All authenticstion shoud happens here.
+        //We need to check auth header here. All authentication should happens here.
         log.info("message came with auth header:" + formatHeader(carbonMessage));
     }
 
@@ -101,13 +101,6 @@ public class LoggingHandler implements MessagingHandler {
 
     private String formatHeader(CarbonMessage message) {
         String header = message.getHeader("Authorization");
-        /*StringBuilder stringBuilder = new StringBuilder("\n");
-        for (Map.Entry<String, String> entry : headers.entrySet()) {
-            stringBuilder.append(entry.getKey());
-            stringBuilder.append(" --> ");
-            stringBuilder.append(entry.getValue());
-            stringBuilder.append("\n");
-        }*/
         return header;
 
     }
